@@ -1,0 +1,101 @@
+{
+  "processing": {
+    "algorithm": "WatershedAdaptive",
+    "parallel": true,
+    "number_of_generations": 5000,
+    "number_of_individuals": 16
+  },
+  "assignments": [
+    {
+      "target": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Testgebiete.gdb\\Trees_Bergwald",
+      "raw_data": {
+        "las_high_veg_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\high_vegetation\\Bergwald_high_vegetation.las",
+        "las_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Bergwald.las",
+        "dom_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DOM\\DOM_Bergwald.tif",
+        "dtm_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DTM\\DTM_Bergwald.tif"
+      }
+    },
+    {
+      "target": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Testgebiete.gdb\\Trees_Hochstammobstgarten",
+      "raw_data": {
+        "las_high_veg_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\high_vegetation\\Hochstammobstgarten_high_vegetation.las",
+        "las_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Hochstammobstgarten.las",
+        "dom_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DOM\\DOM_Hochstammobstgarten.tif",
+        "dtm_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DTM\\DTM_Hochstammobstgarten.tif"
+      }
+    },
+    {
+      "target": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Testgebiete.gdb\\Trees_Laubwald",
+      "raw_data": {
+        "las_high_veg_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\high_vegetation\\Laubwald_high_vegetation.las",
+        "las_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Laubwald.las",
+        "dom_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DOM\\DOM_Laubwald.tif",
+        "dtm_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DTM\\DTM_Laubwald.tif"
+      }
+    },
+    {
+      "target": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Testgebiete.gdb\\Trees_Nadelwald",
+      "raw_data": {
+        "las_high_veg_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\high_vegetation\\Nadelwald_high_vegetation.las",
+        "las_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Nadelwald.las",
+        "dom_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DOM\\DOM_Nadelwald.tif",
+        "dtm_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DTM\\DTM_Nadelwald.tif"
+      }
+    },
+    {
+      "target": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Testgebiete.gdb\\Trees_Siedlung",
+      "raw_data": {
+        "las_high_veg_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\high_vegetation\\Siedlung_high_vegetation.las",
+        "las_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Siedlung.las",
+        "dom_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DOM\\DOM_Siedlung.tif",
+        "dtm_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DTM\\DTM_Siedlung.tif"
+      }
+    },
+    {
+      "target": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Testgebiete.gdb\\Trees_Stadtpark",
+      "raw_data": {
+        "las_high_veg_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\high_vegetation\\Stadtpark_high_vegetation.las",
+        "las_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\Stadtpark.las",
+        "dom_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DOM\\DOM_Stadtpark.tif",
+        "dtm_path": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\data_testareas\\DTM\\DTM_Stadtpark.tif"
+      }
+    }
+  ],
+  "logging": {
+    "version": 1,
+    "disable_existing_loggers": true,
+    "formatters": {
+      "detailed": {
+        "class": "logging.Formatter",
+        "format": "%(asctime)s  %(levelname)-8s %(processName)-20s %(message)s"
+      }
+    },
+    "handlers": {
+      "console": {
+        "class": "logging.StreamHandler",
+        "level": "INFO",
+        "formatter": "detailed"
+      },
+      "file": {
+        "class": "logging.FileHandler",
+        "filename": "D:\\UNIGIS\\Masterarbeit\\Code\\incubator\\log\\incubator.log",
+        "mode": "a",
+        "formatter": "detailed"
+      }
+    },
+    "loggers": {
+      "worker": {
+        "handlers": [
+          "console"
+        ]
+      }
+    },
+    "root": {
+      "level": "INFO",
+      "handlers": [
+        "console",
+        "file"
+      ]
+    }
+  }
+}
