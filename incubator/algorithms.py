@@ -86,8 +86,14 @@ class WatershedAdaptive(processing.Individual):
         """
         Delineate trees by separating forest and field areas and a watershed segmentation algorithm
 
-        :param las_file_path: Path to the lidar point cloud stored as las file.
-        :type las_file_path: String
+        :param las_path: Path to the lidar point cloud stored as las file.
+        :type las_path: String
+        :param las_high_veg_path: Path to the filtered lidar point cloud stored as las file (high vegetation, class 5)
+        :type las_high_veg_path: String
+        :param dom_path: Path to the digital surface model of the same area
+        :type dom_path: String
+        :param dtm_path: Path to the digital terrain model of the same area
+        :type dtm_path: String
         :return: Detected tree crowns as a point cloud
         :rtype: :class:`incubator.TreePoints`
         """
@@ -113,7 +119,8 @@ class WatershedAdaptive(processing.Individual):
         dtm = io.imread(dtm_path)
 
         # Histogram
-        histogram, binx, biny = numpy.histogram2d(high_veg_las.x, high_veg_las.y, bins=[(bin_x * self.resolution), (bin_y * self.resolution)])
+        histogram, binx, biny = numpy.histogram2d(high_veg_las.x, high_veg_las.y,
+                                                  bins=[(bin_x * self.resolution), (bin_y * self.resolution)])
 
         # Rotate -90
         histogram = numpy.rot90(histogram)
@@ -147,8 +154,10 @@ class WatershedAdaptive(processing.Individual):
         field = numpy.ma.array(veg_dom, mask=regions_forest, fill_value=0).filled()
         forest = numpy.ma.array(veg_dom, mask=regions_field, fill_value=0).filled()
 
-        trees_field = self.do_watershed(field, self.field_denoising_weight, self.field_sigma, self.field_truncate, self.field_min_distance, self.field_compactness)
-        trees_forest = self.do_watershed(forest, self.forest_denoising_weight, self.forest_sigma, self.forest_truncate, self.forest_min_distance, self.forest_compactness)
+        trees_field = self.do_watershed(field, self.field_denoising_weight, self.field_sigma, self.field_truncate,
+                                        self.field_min_distance, self.field_compactness)
+        trees_forest = self.do_watershed(forest, self.forest_denoising_weight, self.forest_sigma, self.forest_truncate,
+                                         self.forest_min_distance, self.forest_compactness)
 
         labels = trees_field + (trees_forest * (numpy.max(trees_field) + 1))
 
@@ -183,6 +192,24 @@ class WatershedAdaptive(processing.Individual):
         return processing.TreePoints(numpy.vstack(tree_locations))
 
     def do_watershed(self, img, denoising_weight, sigma, truncate, min_distance, compactness):
+        """
+        Private function to run the watershed segmentation for a prepared image.
+
+        :param img: The image to run the watershed segmentation
+        :type img: Numpy array
+        :param denoising_weight: The weight factor for denoising the image before watershed segmentation. See: https://scikit-image.org/docs/dev/api/skimage.restoration.html#skimage.restoration.denoise_tv_chambolle
+        :type denoising_weight: Float
+        :param sigma: Sigma value for gaussian blurring the image before watershed segmentation. See: https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.gaussian
+        :type sigma: Float
+        :param truncate: Truncation value for gaussian blurring the image before watershed segmentation. See: https://scikit-image.org/docs/dev/api/skimage.filters.html#skimage.filters.gaussian
+        :type truncate: Float
+        :param min_distance: Minimum distance for local maxia representing tree tops.
+        :type min_distance: Float
+        :param compactness: Compactness of a watershed basin: See https://scikit-image.org/docs/dev/api/skimage.morphology.html#skimage.morphology.watershed
+        :type compactness: Float
+        :return: The image containing the labeled areas for individual trees.
+        :rtype: Numpy array
+        """
         if denoising_weight != 0:
             denoised = denoise_tv_chambolle(img, weight=denoising_weight)
         else:
@@ -205,6 +232,7 @@ class WatershedAdaptive(processing.Individual):
 
     def mate(self, other):
         """
+        Do crossover and mutation with another individual.
 
         :param other: The other individual to mate this algorithm with
         :type other: :class:`WatershedAdaptive`
@@ -251,24 +279,25 @@ class Li2012(processing.Individual):
         self.hmin = self.chromosome.genes[4].value
         self.speed_up = self.chromosome.genes[5].value
 
-    def solve_assignment(self, las_file_path):
+    def solve_assignment(self, las_high_veg_path):
         """
         Delineate trees by starting R environment and using `li2012` function from lidr package.
 
-        :param las_file_path: Path to the lidar point cloud stored as las file.
-        :type las_file_path: String
+        :param las_high_veg_path: Path to the filtered lidar point cloud stored as las file.
+        :type las_high_veg_path: String
         :return: Detected tree crowns as a point cloud
         :rtype: :class:`incubator.TreePoints`
         """
         lidr = rpackages.importr("lidR")
         stats = rpackages.importr("stats")
         lidr.progress = False
-        las = lidr.readLAS(las_file_path, select="xyz", filter="-drop_z_below 0")
+        las = lidr.readLAS(las_high_veg_path, select="xyz", filter="-drop_z_below 0")
         trees = lidr.lastrees(las, lidr.li2012(dt1=self.dt1, dt2=self.dt2, R=self.radius, Zu=self.zu, hmin=self.hmin,
                                                speed_up=self.speed_up))
         trees = stats.na_omit(trees.slots["data"])  # Delete points with no treeID
 
-        tree_data = numpy.transpose(numpy.array(trees))
+        tree_data = numpy.transpose(
+            numpy.vstack((numpy.array(trees[0]), numpy.array(trees[1]), numpy.array(trees[2]), numpy.array(trees[3]))))
         tree_numbers = numpy.unique(tree_data[:, 3])
         tree_tops = numpy.zeros((len(tree_numbers), 4))
         tree_counter = 0
@@ -297,6 +326,7 @@ class Tree:
     """
     Representation of a single tree with multiple parameters.
     """
+
     def __init__(self, tree_number, x=None, y=None, z=None, dtm_min=None, dtm_mean=None,
                  dom_min=None, dom_mean=None, dom_median=None, dom_max=None, area=None, diameter=None, height=None):
         self.tree_number = tree_number

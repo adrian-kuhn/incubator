@@ -21,16 +21,27 @@ class Gene:
     """
 
     def __init__(self, name, pool, value=None):
+        """
+        Initialize a gene with name, gene pool and optional starting value.
+        If no value provided, the gene will be initialized with a random value.
+
+        :param name: The unique name of the gene
+        :type name: String
+        :param pool: The gene pool containing an interval of allowed values.
+        :type pool: List of any values
+        :param value: The value of the gene
+        :type value: Any
+        """
         self.name = name
         self.pool = pool
         self.value = value if value is not None else self.init()
 
     def __repr__(self):
         """
-        String representation of this gene
+        String representation of this gene.
 
         :return: Gene as a String
-        rtype: String
+        :rtype: String
         """
         return "{}: {}".format(self.name, round(self.value, 1) if isinstance(self.value, float) else self.value)
 
@@ -38,8 +49,10 @@ class Gene:
         """
         Genes are equal by name. Every gene in a genome needs a unique name to be distinguishable.
 
-        :param other:
-        :return:
+        :param other: The other gene to check with.
+        :type other: :class:`Gene`
+        :return: True, if this gene is identical with the other one. False otherwise
+        :rtype: Boolean
         """
         return isinstance(other, self.__class__) and self.name == other.name
 
@@ -69,6 +82,12 @@ class Chromosome:
     """
 
     def __init__(self, genes=None):
+        """
+        Initialize a chromosome with or without genes.
+
+        :param genes: Optional list of genes.
+        :type genes: List of :class:`Gene`
+        """
         self.genes = genes
 
     @classmethod
@@ -79,7 +98,8 @@ class Chromosome:
 
         :param gene_pool: A dictionary with key value pairs containing genes names and possible values.
         :type gene_pool: Dictionary
-        :return:
+        :return: The newly created chromosome with random gene values
+        :rtype: :class:`Chromosome`
         """
         genes = []
         for name, pool in gene_pool.items():
@@ -91,7 +111,7 @@ class Chromosome:
         String representation of this chromosome
 
         :return: Chromosome as a String
-        rtype: String
+        :rtype: String
         """
         return " | ".join(str(gene) for gene in self.genes)
 
@@ -99,7 +119,7 @@ class Chromosome:
         """
         Equality check for two chromosomes. Chromosomes are identical by the genes.
 
-        :param other: The other chromosome to check
+        :param other: The other chromosome to check with.
         :type other: :class:`incubator.Chromosome`
         :return: True, if both chromosomes are identical. False otherwise
         :rtype: Boolean
@@ -109,6 +129,9 @@ class Chromosome:
     def mutate(self, number_of_genes=3):
         """
         Randomly mutate genes (one parameter) in the chromosome (in the set of parameters)
+
+        :param number_of_genes: Define the number of genes being mutated randomly. Default is 3.
+        :type number_of_genes: Integer
         """
         for i in range(0, number_of_genes):
             self.genes[random.randint(0, len(self.genes) - 1)].mutate()
@@ -122,7 +145,7 @@ class Chromosome:
         :type other: :class:`Chromosome`
         :param erroneous: Define if this genome crossover function is erroneous and can have mutations. Default is True.
         :type erroneous: Boolean.
-        :return: New chromosome object build with parameters from this and the other chromosome
+        :return: New chromosome build with parameters from this and the other chromosome
         :rtype: :class:`Chromosome`
         """
         if self == other:
@@ -145,6 +168,10 @@ class Individual:
 
         :param chromosome: An optional existing chromosome to init this individual
         :type chromosome: :class:`Chromosome`
+        :param gene_pool: Static Dictionary with intervals for every gene.
+        :type gene_pool: Dictionary
+        :param assignments: List of assignments to solve
+        :type assignments: List of :class:`Assignment`
         """
         if chromosome is None and gene_pool is None:
             raise AttributeError("Genetic algorithms need a either a chromosome or a gene pool for initializing")
@@ -171,10 +198,10 @@ class Individual:
 
     def __repr__(self):
         """
-        String representation of this Algorithm
+        String representation of this individual.
 
         :return: Algorithm as a String
-        rtype: String
+        :rtype: String
         """
         return "{} with chromosome {} and avg fitness *{}*, weighted fitness !{}! (Distance={}, TP={}, FP={}, FN={})"\
             .format(self.__class__.__name__, self.chromosome, self.fitness, self.fitness_weighted, self.distance,
@@ -192,18 +219,37 @@ class Individual:
         return self.fitness > other.fitness
 
     def read_chromosome(self):
+        """
+        Abstract method to read the specific chromosome values. Must be implemented in concrete algorithm,
+        because every algorithm has another chromosome.
+
+        :raises: NotImplemented Exception, because it is abstract
+        """
         raise NotImplemented("Must be implemented in concrete algorithm")
 
     def solve_assignment(self, **raw_data):
+        """
+        Abstract method to solve arbitrary assignment. Must be implemented in concrete algorithm.
+
+        :param raw_data: Key worded arguments according settings needed to solve the assignment.
+        :type raw_data: Any
+        :raises: NotImplemented Exception, because it is abstract
+        """
         raise NotImplemented("Must be implemented in concrete algorithm")
 
     def mate(self, other):
+        """
+        Abstract method to mate this individual with another one. Must be implemented in concrete algorithm.
+
+        :param other: The other individual
+        :type other: :class:`incubator.Individual`
+        :raises: NotImplemented Exception, because it is abstract
+        """
         raise NotImplemented("Must be implemented in concrete algorithm")
 
     def run(self):
         """
-        Solve all assignments stored in this individual.
-        Calculate fitness parameters afterwards.
+        Solve all assignments stored in this individual and calculate F1-Score as fitness parameter.
         """
         self.read_chromosome()
         if self.fitness == 0:
@@ -228,11 +274,17 @@ class Generation:
     Collection of multiple individuals
     """
     def __init__(self, individuals=None):
+        """
+        Initialize the generation with an optional list of individuals.
+
+        :param individuals: The concrete individuals (the algorithms solving the problem)
+        :type individuals: List of class:`Individual`
+        """
         self.individuals = individuals or []
 
     def __repr__(self):
         """
-        String representation of this generation
+        String representation of this generation.
 
         :return: Generation as a String
         :rtype: String
@@ -244,6 +296,7 @@ class Generation:
         Solve all assignments within the individuals of this generation with multiple processes.
 
         :param pool: Processing pool from the python multiprocessing library.
+        :type pool: Python multiprocessing pool
         """
         self.individuals = pool.map(self._run, self.individuals)
 
@@ -258,6 +311,7 @@ class Generation:
     def _run(individual):
         """
         Static function to solve the assignment in a parallel worker instance.
+
         :param individual: The individual
         :type individual: :class:`Individual`
         :return: The individual containing the results after solving the assignments.
@@ -284,6 +338,7 @@ class Generation:
     def selection(self, number_of_parents):
         """
         Select the best performing parents by sorting the individuals according the fitness parameter.
+
         :param number_of_parents: Defines the number of best performing parents being selected.
         :type number_of_parents: Integer
         :return: List of best performing individuals
@@ -315,6 +370,20 @@ class Incubator:
     Main class containing a list of generations and controlling the evolutionary process.
     """
     def __init__(self, individual, assignments, number_of_generations, number_of_individuals, parallel=True):
+        """
+        Initialize the Incubator with settings
+
+        :param individual: The concrete class used in the incubator (e.g. WatershedAdaptive)
+        :type individual: class:`Individual`
+        :param assignments: A list of assignments feed to the individuals in the incubator.
+        :type assignments: class:`Assignment`
+        :param number_of_generations: The maximum number of generations calculated in the incubator.
+        :type number_of_individuals: Integer
+        :param number_of_individuals: The number if individuals per generation used in the incubator.
+        :type number_of_individuals: Integer
+        :param parallel: Indication to solve the assignments serially or in parallel. Default is parallel (True)
+        :type parallel: Boolean
+        """
         self.assignments = assignments
         self.number_of_generations = number_of_generations
         self.number_of_individuals = number_of_individuals
@@ -331,9 +400,10 @@ class Incubator:
 
     def init_first_generation(self, individual):
         """
-        Initializes the incubator with a list individuals in the first generations.
+        Initializes the incubator with a list of individuals in the first generation.
         The individuals will have random parameters.
-        :param individual: Class instance containing a concrete representation of an individual (an algorithm).
+
+        :param individual: Class instance containing a concrete representation of an individual (the algorithm).
         :type individual: class:`Individual`
         """
         individuals = []
@@ -345,7 +415,7 @@ class Incubator:
     def breed(self):
         """
         Looping over a specified number of generations an let the individuals solve the assignments.
-        Select, mate and mutate the best performing individuals of the current generation.
+        Select, mate and mutate the best performing individuals of the current generation and build the next generation.
         """
         for i in range(0, self.number_of_generations):
             start = datetime.datetime.now()
@@ -367,6 +437,15 @@ class Assignment:
     Represents an assignment containing the required raw data and target data set (the reference)
     """
     def __init__(self, target, **raw_data):
+        """
+        Initialize the assignment with a target object (the reference) and
+        key worded arguments needed to solve the assignment.
+
+        :param target: The target object (the reference data set)
+        :type target: class:`TreePoints`
+        :param raw_data: Arbitrary list of data needed so solve the assignment.
+        :type raw_data: Any
+        """
         self.target = target
         self.raw_data = raw_data
         self.result = None
@@ -406,6 +485,7 @@ class TreePoints:
     def from_feature_class(cls, path):
         """
         Load a point cloud from ESRI file geo database point feature class
+
         :param path: Path to the feature class on the file system
         :type path: String
         :return: A TreePoint object containing the tree crown points according the point feature class.

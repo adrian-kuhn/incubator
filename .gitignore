@@ -3,3 +3,4 @@ data
 data_testareas
 log
 /results
+/incubator/__pycache__/
