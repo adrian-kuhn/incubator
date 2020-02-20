@@ -1,22 +1,22 @@
 Incubator
 ==============
 Python Command line application (CLI) containing a genetic algorithm to find best parameters for arbitrary assignments.
-Realized as a master thesis for the canton of Lucerne to obtain the UNIGIS Master of Science (MSc) degree at the Paris-Lodron University Salzburg
+Used to evaluate and parametrize algorithms to detect single trees in LiDAR data.
+Realized as a master thesis for the canton of Lucerne to obtain the UNIGIS Master of Science (MSc) degree at the Paris-Lodron University of Salzburg.
 
 
 ![Final workflow](doc/incubator.png)
 
 The `Incubator` is build with classes in Python 3.6 and can be used for the evolutionary
 development of any algorithm. Starting point is the incubator, which can be started (`breed`) 
-with a concrete instance of an `Individual` (e.g. `WatershedAdaptive`), an arbitrary number of tasks 
-(assignments) and various process parameters. In this case the tasks correspond to the single 
-tree extraction in six test areas. Each algorithm is derived from the base class `Individual` 
-and thus contains the static `GENE_POOL` and a number of parameters (`Gene`) packed 
-into a `Chromosome`. The incubator initializes the first generation of individuals 
+with a concrete instance of an `Individual` (e.g. `WatershedAdaptive`), an arbitrary number of `assignments` and various process parameters.
+The assignments in this framework were used for single 
+tree extraction from LiDAR data in six test areas. Each algorithm is derived from the base class `Individual` 
+and thus contains a static `GENE_POOL` and a number of `Gene` packed 
+in a `Chromosome`. The incubator initializes the first generation of individuals 
 and allows all individuals to solve the task either in serial or parallel processing. 
-The target as well as the result of a task are point data sets (`PointCloud`), which 
-can calculate the accuracy by means of a similarity function. From this metric the 
-measurable fitness of an algorithm can be calculated. As in other research on single tree extraction, 
+The target (the reference) and the result of a task are point data sets (`PointCloud`), which 
+can calculate the accuracy by means of a similarity function. From this metric the fitness of an algorithm can be calculated. As in other research on single tree extraction, 
 the F1-Score is used to minimize false positives and false negatives equally. 
 The higher the F1-score, the more precisely an algorithm has solved the problem. 
 The incubator ensures that the individuals develop within a generation through an evolutionary 
@@ -24,9 +24,9 @@ step (`evolve`) consisting of selection, chromosome crossover, mating and random
 
 Purpose
 -------
-The framework was build to test different algorithms for tree delineation in LiDAR data. 
+The framework was build to test different algorithms for single tree detection from LiDAR data. 
 Every algorithm started with a random set of parameters and had to solve the problem.
-With the incubator the best performing parameters per algorithm could be found.
+With the incubator, the best performing parameters per algorithm could be found.
 Finally the best performing algorithm was used to detect single trees in the canton of Lucerne.
 (See: https://github.com/adrian-kuhn/tree-detection)
 
