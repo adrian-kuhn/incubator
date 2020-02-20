@@ -26,7 +26,8 @@ required = [
     "numpy >= 1.16.2",
     "scikit-image >= 0.16",
     "laspy >= 1.2",
-    "rpy2 >= 3.1.0"
+    "rpy2 >= 2.9.4",
+    "docopt >= 0.6.2"
 ]
 
 setup(

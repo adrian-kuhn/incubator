@@ -1,8 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+incubator - CLI application interface
+
+Usage:
+    incubator <setting-file>
+
+
+Arguments:
+    setting-file    The name of the setting file being loaded for the next run
+
+Examples:
+    incubator settings_watershed
+"""
+
 import sys
 import logging.config
+from docopt import docopt
 
 from incubator import settings, processing, algorithms
 
@@ -31,10 +46,9 @@ def main():
         print('Please activate the conda package and run on python 3')
         return
 
-    settings.init()
+    args = docopt(__doc__, version='8.5.0')
+    settings.init(args["<setting-file>"])
     logging.config.dictConfig(settings.get("logging"))
-
-    # setup_las_files()
 
     try:
         algorithm = getattr(algorithms, settings.get("processing.algorithm"))

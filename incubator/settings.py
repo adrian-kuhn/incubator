@@ -10,28 +10,29 @@ import os
 __SETTINGS = None
 """ Global settings """
 
-__SETTING_FILE = "settings.json"
-""" The postfix for setting files """
+__SETTING_DIR = "settings"
+""" The folder for setting files """
 
 
-def init(settings_dir="settings"):
+def init(settings_file):
     """
     Search the settings file in settings directory and given environment variable.
     The settings file has to be in the structure 'env'.settings.json
-    Initialize the settings by loading the JSON file and return the settings Dictonary.
+    Initialize the settings by loading the JSON file and return the settings Dictionary.
 
-    :param settings_dir: Relative path to the settings folder. Default is 'settings'
-    :type settings_dir: String
+    :param settings_file: Name of the setting file. Default is 'settings'
+    :type settings_file: String
     :raises SettingsNotFoundException: Raises a SettingsNotFoundException, if the settings file cannot be found.
     """
     global __SETTINGS
 
     try:
-        s = open(os.path.join(settings_dir, __SETTING_FILE), 'rt')
+        settings_file = "{}.json".format(settings_file) if not settings_file.endswith(".json") else settings_file
+        s = open(os.path.join(__SETTING_DIR, settings_file), 'rt')
         __SETTINGS = json.load(s)
 
     except (OSError, IOError, FileNotFoundError):
-        raise SettingsNotFoundException(settings_dir, __SETTING_FILE)
+        raise SettingsNotFoundException(__SETTING_DIR, settings_file)
 
 
 def get(key, settings=None):
