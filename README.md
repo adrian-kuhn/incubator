@@ -15,7 +15,7 @@ tree extraction from LiDAR data in six test areas. Each algorithm is derived fro
 and thus contains a static `GENE_POOL` and a number of `Gene` packed 
 in a `Chromosome`. The incubator initializes the first generation of individuals 
 and allows all individuals to solve the task either in serial or parallel processing. 
-The target (the reference) and the result of a task are point data sets (`PointCloud`), which 
+The target (the reference) and the result of a task are point data sets (`TreeTops`), which 
 can calculate the accuracy by means of a similarity function. From this metric the fitness of an algorithm can be calculated. As in other research on single tree extraction, 
 the F1-Score is used to minimize false positives and false negatives equally. 
 The higher the F1-score, the more precisely an algorithm has solved the problem. 

@@ -442,7 +442,7 @@ class Assignment:
         key worded arguments needed to solve the assignment.
 
         :param target: The target object (the reference data set)
-        :type target: class:`TreePoints`
+        :type target: class:`TreeTops`
         :param raw_data: Arbitrary list of data needed so solve the assignment.
         :type raw_data: Any
         """
@@ -458,7 +458,7 @@ class Assignment:
             self.result.similarity(self.target)
 
 
-class TreePoints:
+class TreeTops:
     """
     Representation of a point cloud with tree crown points (x, y, z).
     """
@@ -489,7 +489,7 @@ class TreePoints:
         :param path: Path to the feature class on the file system
         :type path: String
         :return: A TreePoint object containing the tree crown points according the point feature class.
-        :rtype: class:`TreePoints`
+        :rtype: class:`TreeTops`
         """
         fields = ['SHAPE@XYZ']
         points = []
@@ -512,7 +512,7 @@ class TreePoints:
         To get a weighted accuracy value, not the amount of FP or FN will be used, but the sum of the euclidean distances.
 
         :param other: The other point cloud to compare this point cloud with
-        :type other: :class:`TreePoints`
+        :type other: :class:`TreeTops`
         :param threshold: The threshold in meter the treat two points as equal. Default value is 0.0
         :type threshold: Float
         :return: Accuracy measurement in percent

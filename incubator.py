@@ -33,7 +33,7 @@ def load_assignments():
     """
     assignments = []
     for assignment in settings.get("assignments"):
-        assignments.append(processing.Assignment(processing.TreePoints.from_feature_class(assignment["target"]),
+        assignments.append(processing.Assignment(processing.TreeTops.from_feature_class(assignment["target"]),
                                                  **assignment["raw_data"]))
     return assignments
 

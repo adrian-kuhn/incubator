@@ -95,7 +95,7 @@ class WatershedAdaptive(processing.Individual):
         :param dtm_path: Path to the digital terrain model of the same area
         :type dtm_path: String
         :return: Detected tree crowns as a point cloud
-        :rtype: :class:`incubator.TreePoints`
+        :rtype: :class:`incubator.TreeTops`
         """
         high_veg_las = laspy.file.File(las_high_veg_path, mode="r")
 
@@ -189,7 +189,7 @@ class WatershedAdaptive(processing.Individual):
 
         if len(tree_locations) == 0:
             tree_locations.append([0, 0, 0])
-        return processing.TreePoints(numpy.vstack(tree_locations))
+        return processing.TreeTops(numpy.vstack(tree_locations))
 
     def do_watershed(self, img, denoising_weight, sigma, truncate, min_distance, compactness):
         """
@@ -286,7 +286,7 @@ class Li2012(processing.Individual):
         :param las_high_veg_path: Path to the filtered lidar point cloud stored as las file.
         :type las_high_veg_path: String
         :return: Detected tree crowns as a point cloud
-        :rtype: :class:`incubator.TreePoints`
+        :rtype: :class:`incubator.TreeTops`
         """
         lidr = rpackages.importr("lidR")
         stats = rpackages.importr("stats")
@@ -308,7 +308,7 @@ class Li2012(processing.Individual):
 
         tops = tree_tops[:, [0, 1, 2]]
 
-        return processing.TreePoints(tops)
+        return processing.TreeTops(tops)
 
     def mate(self, other):
         """
